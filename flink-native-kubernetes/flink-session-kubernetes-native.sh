@@ -6,12 +6,19 @@
 ##
 
 # start flink session
-kubernetes-session.sh -n flink-native-kubernetes -Dkubernetes.cluster-id=flink-session-cluster
-
+kubernetes-session.sh  -Dkubernetes.cluster-id=flink-session-cluster -Dkubernetes.rest-service.exposed.type=NodePort \
+-Dkubernetes.namespace=flink-native-kubernetes -Dkubernetes.service-account=flink \
+-Dkubernetes.jobmanager.cpu=0.2 \
+-Djobmanager.memory.process.size=1024m \
+-Dresourcemanager.taskmanager-timeout=3600000 \
+-Dkubernetes.taskmanager.cpu=0.2 \
+-Dtaskmanager.memory.process.size=1024m \
+-Dtaskmanager.numberOfTaskSlots=3
 # submit job
 flink run \
-    --target kubernetes-session \
+    --target kubernetes-session  \
     -Dkubernetes.cluster-id=flink-session-cluster \
+    -Dkubernetes.namespace=flink-native-kubernetes -Dkubernetes.service-account=flink \
     ./examples/streaming/TopSpeedWindowing.jar
 
 # stop flink session and delete deployment
